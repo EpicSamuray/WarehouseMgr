@@ -59,7 +59,7 @@ public class ProductResource {
         entity.setName(item.getName());
         entity.setPrice(item.getPrice());
         entity.setQuantity(item.getQuantity());
-
+        
         return entity;
     }
 
