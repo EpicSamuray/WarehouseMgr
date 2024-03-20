@@ -9,6 +9,7 @@ enum MovementType {
     IN, OUT
 }
 
+//TODO: add type same Products
 @MongoEntity(collection = "stockMovement")
 public class StockMovement extends PanacheMongoEntity {
 

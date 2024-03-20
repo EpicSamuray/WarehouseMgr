@@ -9,6 +9,7 @@ enum Role {
     ADMIN, USER
 }
 
+//TODO: add type same Products
 @MongoEntity(collection = "user")
 public class User extends PanacheMongoEntity {
     

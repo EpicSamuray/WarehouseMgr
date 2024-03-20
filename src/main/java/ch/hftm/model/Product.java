@@ -2,28 +2,36 @@ package ch.hftm.model;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
+import jakarta.validation.constraints.Min;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.eclipse.microprofile.graphql.NonNull;
+import org.eclipse.microprofile.graphql.Type;
 
 import java.util.List;
 import java.util.Objects;
 
 @MongoEntity(collection = "product")
+@Type
 public class Product extends PanacheMongoEntity {
 
     @BsonProperty("name")
+    @NonNull
     private String name;
 
     @BsonProperty("description")
     private String description;
     
     @BsonProperty("price")
+    @NonNull
     private double price;
 
     @BsonProperty("category")
+    @NonNull
     private String category;
     
     @BsonProperty("quantity")
+    @Min(1)
     private int quantity;
 
     @BsonProperty("StockMovement")

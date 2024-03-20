@@ -1,6 +1,7 @@
 package ch.hftm.resource;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.graphql.GraphQLApi;
@@ -21,6 +22,21 @@ public class ProductResource {
 
     private static final Logger LOG = Logger.getLogger(ProductResource.class);
 
+    @Mutation
+    public Product createProduct(@Valid Product item) {
+        ObjectId id = new ObjectId();
+        item.id = id;
+        LOG.info("Creating new item: " + item.id);
+        Product product = itemService.createProduct(item);
+        if (product != null) {
+            LOG.info("Sending item for validation: " + item.id);
+            return product;
+        }
+        return null;
+    }
+
+    //TODO: Alle Unter diesem Todo muss noch angepasst werden
+
     @Query
     public List<Product> getAllProducts() {
         return itemService.listAll();
@@ -38,17 +54,6 @@ public class ProductResource {
     }
 
     @Mutation
-    public Product createProduct(Product item) {
-        LOG.info("Creating new item: " + item.id);
-        itemService.persist(item);
-        if (itemService.isPersistend(item.id)){
-            itemService.sendItemForValidation(item.id);
-            return item;
-        }
-        return null;
-    }
-
-    @Mutation
     public Product putItem(String id, Product item) {
         ObjectId objectId = new ObjectId(id);
         Product entity = itemService.find(objectId);
@@ -59,7 +64,7 @@ public class ProductResource {
         entity.setName(item.getName());
         entity.setPrice(item.getPrice());
         entity.setQuantity(item.getQuantity());
-        
+
         return entity;
     }
 

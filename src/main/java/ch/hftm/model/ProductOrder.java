@@ -5,6 +5,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 
+//TODO: add type same Products
 @MongoEntity(collection = "productOrder")
 public class ProductOrder extends PanacheMongoEntity {
     

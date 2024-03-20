@@ -13,6 +13,7 @@ enum Status {
     PENDING, APPROVED, REJECTED
 }
 
+//TODO: add type same Products
 @MongoEntity(collection = "order")
 public class Order extends PanacheMongoEntity{
     
