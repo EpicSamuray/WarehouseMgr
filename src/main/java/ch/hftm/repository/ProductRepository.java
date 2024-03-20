@@ -5,11 +5,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.types.ObjectId;
 
 import ch.hftm.model.Product;
+import ch.hftm.repository.Interface.IRepositoryPersist;
 
 @ApplicationScoped
-public class ProductRepository implements PanacheMongoRepository<Product> {
+public class ProductRepository implements PanacheMongoRepository<Product>, IRepositoryPersist{
 
-    public boolean isPersistend(ObjectId id) {
+    public boolean isPersisted(ObjectId id) {
         return findById(id) != null;
     }
 }

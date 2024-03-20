@@ -11,9 +11,6 @@ enum MovementType {
 
 @MongoEntity(collection = "stockMovement")
 public class StockMovement extends PanacheMongoEntity {
-    
-    @BsonProperty("productId")
-    private Product product;
 
     @BsonProperty("type")
     private MovementType type;
@@ -27,19 +24,10 @@ public class StockMovement extends PanacheMongoEntity {
     public StockMovement() {
     }
 
-    public StockMovement(Product product, MovementType type, int quantity, String date) {
-        this.product = product;
+    public StockMovement(MovementType type, int quantity, String date) {
         this.type = type;
         this.quantity = quantity;
         this.date = date;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
     }
 
     public MovementType getType() {

@@ -20,4 +20,7 @@ public class User extends PanacheMongoEntity {
 
     @BsonProperty("email")
     private String email;
+
+    @BsonProperty("order")
+    private Order order;
 }

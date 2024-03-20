@@ -1,9 +1,11 @@
 package ch.hftm.model;
 
 
+import java.util.List;
 import java.util.Objects;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
+
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 
@@ -21,7 +23,7 @@ public class Order extends PanacheMongoEntity{
     private Status status;
 
     @BsonProperty("products")
-    private ProductOrder[] products;
+    private List<ProductOrder> products;
 
     @BsonProperty("totalPrice")
     private double totalPrice;
@@ -29,11 +31,11 @@ public class Order extends PanacheMongoEntity{
     public Order() {
     }
 
-    public Order(String orderDate, Status status, ProductOrder[] products, double totalPrice) {
+    public Order(String orderDate, Status status, List<ProductOrder> products, double totalPrice) {
         this.orderDate = orderDate;
         this.status = status;
-        this.products = products;
         this.totalPrice = totalPrice;
+        this.products = products;
     }
 
 
@@ -54,21 +56,16 @@ public class Order extends PanacheMongoEntity{
         this.status = status;
     }
 
-    public ProductOrder[] getProducts() {
+    public List<ProductOrder> getProducts() {
         return products;
     }
 
-    public void setProducts(ProductOrder[] products) {
+    public void setProducts(List<ProductOrder> products) {
         this.products = products;
     }
     
     public void addProduct(ProductOrder product) {
-        ProductOrder[] newProducts = new ProductOrder[products.length + 1];
-        for (int i = 0; i < products.length; i++) {
-            newProducts[i] = products[i];
-        }
-        newProducts[products.length] = product;
-        this.products = newProducts;
+        this.products.add(product);
     }
 
     public double getTotalPrice() {

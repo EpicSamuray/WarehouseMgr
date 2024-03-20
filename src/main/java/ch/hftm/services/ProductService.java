@@ -33,7 +33,7 @@ public class ProductService {
     }
 
     public boolean isPersistend(ObjectId id) {
-        return invItemRepo.isPersistend(id);
+        return invItemRepo.isPersisted(id);
     }
 
     public Product find(ObjectId id) {
@@ -54,6 +54,7 @@ public class ProductService {
         }
     }
 
+    //TODO: Refactor this method to use the ItemReq record
     public void sendItemForValidation(ObjectId itemid) {
         LOG.info("Sending item for validation: " + itemid);
         Product item = invItemRepo.findById(itemid);
@@ -62,7 +63,8 @@ public class ProductService {
             LOG.info("Sended item for validation: " + item.id);
         }
     }
-
+    
+    //FIXME: This method is not used
     @Transactional
     public void updatedItemValidationStatus(ItemRes message) {
         LOG.info("Received validation result: " + message);
@@ -71,12 +73,11 @@ public class ProductService {
         LOG.info("Payload Item: " + objectId);
         LOG.info("Payload Item: " + message.isValid());
         if (item != null) {
-            item.setValidation(message.isValid());
             LOG.info("Persisting item: " + item.id);
             invItemRepo.update(item);
             LOG.info("Persisted item: " + item.id);
         }
-        LOG.info("Payload Item: " + item.isValidation());
+        LOG.info("Payload Item: ");
     }
 
     

@@ -5,6 +5,7 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
+import java.util.List;
 import java.util.Objects;
 
 @MongoEntity(collection = "product")
@@ -25,8 +26,8 @@ public class Product extends PanacheMongoEntity {
     @BsonProperty("quantity")
     private int quantity;
 
-    @BsonProperty("validated")
-    private boolean validation;
+    @BsonProperty("StockMovement")
+    private List<StockMovement> stockMovements;
 
     public Product() {
 
@@ -34,13 +35,12 @@ public class Product extends PanacheMongoEntity {
 
    
 
-    public Product( String name, String description, double price, String category, int quantity, boolean validation) {
+    public Product( String name, String description, double price, String category, int quantity) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.category = category;
         this.quantity = quantity;
-        this.validation = validation;
     }
 
     
@@ -102,18 +102,6 @@ public class Product extends PanacheMongoEntity {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-
-
-    public boolean isValidation() {
-        return validation;
-    }
-
-
-
-    public void setValidation(boolean validation) {
-        this.validation = validation;
     }
 
 

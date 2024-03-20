@@ -8,10 +8,10 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 @MongoEntity(collection = "productOrder")
 public class ProductOrder extends PanacheMongoEntity {
     
-    @BsonProperty("productId")
+    @BsonProperty("product")
     private Product product;
 
-    @BsonProperty("orderId")
+    @BsonProperty("order")
     private Order order;
 
     @BsonProperty("quantity")
