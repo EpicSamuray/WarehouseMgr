@@ -6,11 +6,13 @@ import jakarta.validation.Valid;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Mutation;
+import org.eclipse.microprofile.graphql.NonNull;
 import org.eclipse.microprofile.graphql.Query;
 import org.jboss.logging.Logger;
 
 import ch.hftm.model.Product;
 import ch.hftm.services.ProductService;
+import io.vertx.core.cli.annotations.Description;
 
 import java.util.List;
 
@@ -23,6 +25,7 @@ public class ProductResource {
     private static final Logger LOG = Logger.getLogger(ProductResource.class);
 
     @Mutation
+    @Description("Create a new product")
     public Product createProduct(@Valid Product item) {
         ObjectId id = new ObjectId();
         item.id = id;
@@ -35,11 +38,27 @@ public class ProductResource {
         return null;
     }
 
+    @Mutation
+    @Description("Update a product")
+    public Product putItem(String id, Product item) {
+        LOG.info("Updating item: " + id);
+        if (itemService.find(new ObjectId(id)) == null) {
+            return null;
+        }
+        try {
+            return itemService.updateProduct(new ObjectId(id),item);
+        } catch (Exception e) {
+            LOG.error("Error updating item: " + id + " | " + e.getMessage());
+            return null;
+        }
+    }
+
     //TODO: Alle Unter diesem Todo muss noch angepasst werden
 
     @Query
     public List<Product> getAllProducts() {
-        return itemService.listAll();
+        LOG.info("getAllProducts");
+        return itemService.getAllProducts();
     }
 
     @Query
@@ -51,21 +70,6 @@ public class ProductResource {
         } else {
             return null;
         }
-    }
-
-    @Mutation
-    public Product putItem(String id, Product item) {
-        ObjectId objectId = new ObjectId(id);
-        Product entity = itemService.find(objectId);
-        if (entity == null) {
-            return null;
-        }
-
-        entity.setName(item.getName());
-        entity.setPrice(item.getPrice());
-        entity.setQuantity(item.getQuantity());
-
-        return entity;
     }
 
     @Mutation

@@ -44,18 +44,29 @@ public class ProductService {
         return productRepo.findAll().list();
     }
 
+    public Product find(ObjectId id) {
+        return productRepo.findById(id);
+    }
+
     public Product getProductById(ObjectId id) {
         return productRepo.findById(id);
     }
 
-    public Product updateProduct(Product product) {
-        LOG.info("Updating item: " + product.id);
-        if (product.id == null) {
+    public Product updateProduct(ObjectId id, Product product) {
+        LOG.info("Updating item: " + id);
+        if (id == null) {
+            LOG.error("Error updating item because id is required");
             throw new IllegalArgumentException("id is required");
         }
-        if (productRepo.isPersisted(product.id)) {
+        if (productRepo.isPersisted(id)) {
+            LOG.info("Persisting item: " + id);
+            product.id = id;
             productRepo.update(product);
-            return productRepo.findById(product.id);
+            LOG.info("Updated item: " + id);
+            LOG.info("Sending item for validation: " + id);
+            Product item = productRepo.findById(id);
+            LOG.info("Payload Item: " + item.id);
+            return item;
         }
         return null;
     }
@@ -68,41 +79,15 @@ public class ProductService {
         return productRepo.findAllProducts(page, pageSize);
     }
 
-    public void deleteProduct(ObjectId id) {
-        LOG.info("Deleting item: " + id);
-        Product product = productRepo.findById(id);
-        if (product != null) {
-            productRepo.delete(product);
-            LOG.info("Deleted item: " + id);
-        }
-    }
-
-    public void deleteAllProducts() {
-        LOG.info("Deleting all products");
-        productRepo.deleteAll();
-        LOG.info("All products deleted");
-    }
-
 
     //TODO: Validate this methods 
 
-    public List<Product> listAll() {
-        LOG.info(LOG.getName());
-        return productRepo.listAll();
-    }
 
-    public void persist(Product item) {
-        LOG.info("Persisting item: " + item.id);
-        productRepo.persist(item);
-    }
 
     public boolean isPersistend(ObjectId id) {
         return productRepo.isPersisted(id);
     }
 
-    public Product find(ObjectId id) {
-        return productRepo.findById(id);
-    }
 
     public boolean delete(Product item) {
         return productRepo.deleteById(item.id);
