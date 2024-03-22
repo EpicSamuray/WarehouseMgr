@@ -10,7 +10,7 @@ import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
 import org.jboss.logging.Logger;
 
-import ch.hftm.model.Product;
+import ch.hftm.model.product.Product;
 import ch.hftm.services.ProductService;
 
 import java.util.List;
@@ -26,12 +26,11 @@ public class ProductResource {
     @Mutation
     @Description("Create a new product")
     public Product createProduct(@Valid Product item) {
-        ObjectId id = new ObjectId();
-        item.id = id;
-        LOG.info("Creating new item: " + item.id);
+        item.setId(new ObjectId());
+        LOG.info("Creating new item: " + item.getId());
         Product product = itemService.createProduct(item);
         if (product != null) {
-            LOG.info("Sending item for validation: " + item.id);
+            LOG.info("Sending item for validation: " + item.getId());
             return product;
         }
         return null;

@@ -5,8 +5,8 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.jboss.logging.Logger;
 
-import ch.hftm.model.Order;
-import ch.hftm.model.Product;
+import ch.hftm.model.order.Order;
+import ch.hftm.model.product.Product;
 import ch.hftm.repository.ProductRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,17 +24,17 @@ public class ProductService {
     private static final Logger LOG = Logger.getLogger(ProductService.class);
 
     public Product createProduct(Product product) {
-        LOG.info("Creating new item: " + product.getName() + " | ID: " + product.id);
+        LOG.info("Creating new item: " + product.getName() + " | ID: " + product.getId());
         if (product.getName() == null || product.getName().isEmpty()) {
             throw new IllegalArgumentException("Name is required");
         }
-        if (productRepo.isPersisted(product.id)) {
+        if (productRepo.isPersisted(product.getId())) {
             throw new IllegalArgumentException("Item already exists");
         } 
         productRepo.persist(product);
-        if (productRepo.isPersisted(product.id)){
-            LOG.info("Sending item for validation: " + product.id);
-            return productRepo.findById(product.id);
+        if (productRepo.isPersisted(product.getId())){
+            LOG.info("Sending item for validation: " + product.getId());
+            return productRepo.findById(product.getId());
         } 
         return null;
     }
@@ -60,12 +60,12 @@ public class ProductService {
         }
         if (productRepo.isPersisted(id)) {
             LOG.info("Persisting item: " + id);
-            product.id = id;
+            product.setId(id);
             productRepo.update(product);
             LOG.info("Updated item: " + id);
             LOG.info("Sending item for validation: " + id);
             Product item = productRepo.findById(id);
-            LOG.info("Payload Item: " + item.id);
+            LOG.info("Payload Item: " + item.getId());
             return item;
         }
         return null;
@@ -93,7 +93,7 @@ public class ProductService {
             LOG.error("Error deleting item because item is required");
             throw new IllegalArgumentException("item is required");
         }
-        return productRepo.deleteById(item.id);
+        return productRepo.deleteById(item.getId());
     }
 
     public boolean delete(boolean all) {
@@ -110,9 +110,9 @@ public class ProductService {
     public void sendItemForValidation(ObjectId itemid) {
         LOG.info("Sending item for validation: " + itemid);
         Product item = productRepo.findById(itemid);
-        LOG.info("Payload Item: " + item.id);
+        LOG.info("Payload Item: " + item.getId());
         if (item != null) {
-            LOG.info("Sended item for validation: " + item.id);
+            LOG.info("Sended item for validation: " + item.getId());
         }
     }
     
@@ -125,9 +125,9 @@ public class ProductService {
         LOG.info("Payload Item: " + objectId);
         LOG.info("Payload Item: " + message.isValid());
         if (item != null) {
-            LOG.info("Persisting item: " + item.id);
+            LOG.info("Persisting item: " + item.getId());
             productRepo.update(item);
-            LOG.info("Persisted item: " + item.id);
+            LOG.info("Persisted item: " + item.getId());
         }
         LOG.info("Payload Item: ");
     }

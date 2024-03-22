@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import ch.hftm.model.Product;
+import ch.hftm.model.product.Product;
 import ch.hftm.repository.Interface.IRepositoryPersist;
 
 @ApplicationScoped

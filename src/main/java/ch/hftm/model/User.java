@@ -2,6 +2,7 @@ package ch.hftm.model;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
+import ch.hftm.model.order.Order;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 
