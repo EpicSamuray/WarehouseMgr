@@ -79,17 +79,20 @@ public class ProductService {
         return productRepo.findAllProducts(page, pageSize);
     }
 
-
-    //TODO: Validate this methods 
-
-
-
     public boolean isPersistend(ObjectId id) {
+        if (id == null) {
+            LOG.error("Error checking if item is persisted because id is required");
+            throw new IllegalArgumentException("id is required");
+        }
         return productRepo.isPersisted(id);
     }
 
 
     public boolean delete(Product item) {
+        if (item == null) {
+            LOG.error("Error deleting item because item is required");
+            throw new IllegalArgumentException("item is required");
+        }
         return productRepo.deleteById(item.id);
     }
 

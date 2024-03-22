@@ -3,6 +3,7 @@ package ch.hftm.services;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.jboss.logging.Logger;
 
 import ch.hftm.model.Order;
 import ch.hftm.model.Product;
@@ -25,9 +26,13 @@ public class OrderService {
     @Inject
     private ProductOrderRepository productOrderRepository;
 
+    private static final Logger LOG = Logger.getLogger(OrderService.class);
+
+
     public Order createOrder(Order order) {
 
         if (order.getProducts().isEmpty()) {
+            LOG.error("Error creating order because products are required");
             throw new IllegalArgumentException("Products are required");
         }
 

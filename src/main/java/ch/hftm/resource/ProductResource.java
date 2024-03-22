@@ -4,15 +4,14 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Mutation;
-import org.eclipse.microprofile.graphql.NonNull;
 import org.eclipse.microprofile.graphql.Query;
 import org.jboss.logging.Logger;
 
 import ch.hftm.model.Product;
 import ch.hftm.services.ProductService;
-import io.vertx.core.cli.annotations.Description;
 
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class ProductResource {
 
     @Mutation
     @Description("Update a product")
-    public Product putItem(String id, Product item) {
+    public Product updateProduct(String id, Product item) {
         LOG.info("Updating item: " + id);
         if (itemService.find(new ObjectId(id)) == null) {
             return null;
@@ -53,26 +52,8 @@ public class ProductResource {
         }
     }
 
-    //TODO: Alle Unter diesem Todo muss noch angepasst werden
-
-    @Query
-    public List<Product> getAllProducts() {
-        LOG.info("getAllProducts");
-        return itemService.getAllProducts();
-    }
-
-    @Query
-    public Product getItem(String id) {
-        ObjectId objectId = new ObjectId(id);
-        Product product = itemService.find(objectId);
-        if (product != null) {
-            return product;
-        } else {
-            return null;
-        }
-    }
-
     @Mutation
+    @Description("Delete a product")
     public Product deleteItem(String id) {
         ObjectId objectId = new ObjectId(id);
         Product item = itemService.find(objectId);
@@ -84,7 +65,27 @@ public class ProductResource {
         }
     }
 
+    @Query
+    @Description("Get all products")
+    public List<Product> getAllProducts() {
+        LOG.info("getAllProducts");
+        return itemService.getAllProducts();
+    }
+
+    @Query
+    @Description("Get a product by id")
+    public Product getItem(String id) {
+        ObjectId objectId = new ObjectId(id);
+        Product product = itemService.find(objectId);
+        if (product != null) {
+            return product;
+        } else {
+            return null;
+        }
+    }
+
     @Mutation
+    @Description("Delete all products")
     public boolean deleteAll() {
         return itemService.delete(true);
         
