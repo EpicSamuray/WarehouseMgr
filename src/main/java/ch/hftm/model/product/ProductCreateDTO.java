@@ -22,6 +22,5 @@ public class ProductCreateDTO {
     private String description;
     @NonNull private double price;
     @NonNull private String category;
-    @NonNull private int quantity;
-    @NonNull private List<StockMovementCreateDTO> stockMovements;
+    @NonNull private StockMovementCreateDTO stockMovements;
 }

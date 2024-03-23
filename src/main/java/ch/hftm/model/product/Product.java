@@ -2,7 +2,6 @@ package ch.hftm.model.product;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,11 +37,8 @@ public class Product extends PanacheMongoEntity {
     private String category;
     
     @BsonProperty("quantity")
-    private int quantity;
+    private int totalQuantity;
 
     @BsonProperty("StockMovement")
     private List<StockMovement> stockMovements;
-
-
-
 }

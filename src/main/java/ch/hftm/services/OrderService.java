@@ -58,7 +58,7 @@ public class OrderService {
         for (ProductOrderCreateDTO productOrder : order.getProductOrders()) {
             ProductOrder newProductOrder = createDTOtoProductOrder(productOrder, newOrder);
             Product product = productRepository.findById(newProductOrder.getProductId());
-            product.setQuantity(product.getQuantity() - productOrder.getQuantity());
+            product.setTotalQuantity(product.getTotalQuantity() - productOrder.getQuantity());
             productRepository.update(product);
         }
         
@@ -91,7 +91,7 @@ public class OrderService {
 
         for (ProductOrder productOrder : order.getProducts()) {
             Product product = productRepository.findById(productOrder.getId());
-            product.setQuantity(product.getQuantity() - productOrder.getQuantity());
+            product.setTotalQuantity(product.getTotalQuantity() - productOrder.getQuantity());
             productRepository.update(product);
         }
 

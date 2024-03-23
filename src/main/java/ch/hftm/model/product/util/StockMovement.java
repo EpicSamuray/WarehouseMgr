@@ -1,6 +1,7 @@
 package ch.hftm.model.product.util;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
@@ -17,6 +18,9 @@ import lombok.Setter;
 @MongoEntity(collection = "stockMovement")
 public class StockMovement extends PanacheMongoEntity {
 
+    @BsonProperty("_id")
+    private ObjectId id;
+
     @BsonProperty("type")
     private MovementType type;
     
@@ -26,7 +30,10 @@ public class StockMovement extends PanacheMongoEntity {
     @BsonProperty("date")
     private String date;
 
-    enum MovementType {
+    @BsonProperty("productId")
+    private ObjectId productId;
+
+    public enum MovementType {
         IN, OUT
     }
 

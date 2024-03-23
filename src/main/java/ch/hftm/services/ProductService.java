@@ -1,12 +1,17 @@
 package ch.hftm.services;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.jboss.logging.Logger;
 
-import ch.hftm.model.order.Order;
 import ch.hftm.model.product.Product;
+import ch.hftm.model.product.ProductCreateDTO;
+import ch.hftm.model.product.ProductUpdatedDTO;
+import ch.hftm.model.product.util.StockMovement;
+import ch.hftm.model.product.util.StockMovementCreateDTO;
 import ch.hftm.repository.ProductRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -23,18 +28,21 @@ public class ProductService {
 
     private static final Logger LOG = Logger.getLogger(ProductService.class);
 
-    public Product createProduct(Product product) {
-        LOG.info("Creating new item: " + product.getName() + " | ID: " + product.getId());
-        if (product.getName() == null || product.getName().isEmpty()) {
+    public Product createProduct(ProductCreateDTO product) {
+        LOG.info("Creating new item: " + product.getName());
+        if (product.getName().isEmpty()) {
             throw new IllegalArgumentException("Name is required");
         }
-        if (productRepo.isPersisted(product.getId())) {
+
+        Product item = createDTOtoProduct(product);
+        
+        if (productRepo.isPersisted(item.getId())) {
             throw new IllegalArgumentException("Item already exists");
         } 
-        productRepo.persist(product);
-        if (productRepo.isPersisted(product.getId())){
-            LOG.info("Sending item for validation: " + product.getId());
-            return productRepo.findById(product.getId());
+        productRepo.persist(item);
+        if (productRepo.isPersisted(item.getId())){
+            LOG.info("Sending item for validation: " + item.getId());
+            return productRepo.findById(item.getId());
         } 
         return null;
     }
@@ -52,23 +60,32 @@ public class ProductService {
         return productRepo.findById(id);
     }
 
-    public Product updateProduct(ObjectId id, Product product) {
+    public Product updateProduct(ObjectId id, ProductUpdatedDTO product) {
         LOG.info("Updating item: " + id);
         if (id == null) {
             LOG.error("Error updating item because id is required");
             throw new IllegalArgumentException("id is required");
         }
-        if (productRepo.isPersisted(id)) {
-            LOG.info("Persisting item: " + id);
-            product.setId(id);
-            productRepo.update(product);
-            LOG.info("Updated item: " + id);
-            LOG.info("Sending item for validation: " + id);
-            Product item = productRepo.findById(id);
-            LOG.info("Payload Item: " + item.getId());
-            return item;
+
+        if (!productRepo.isPersisted(id)) {
+            LOG.error("Error updating item because item does not exist");
+            throw new IllegalArgumentException("Item does not exist");
+        }        
+
+        Product item = productRepo.findById(id);
+        if (product.getName() != null) item.setName(product.getName());
+        if (product.getDescription() != null) item.setDescription(product.getDescription());
+        if (product.getPrice() != 0) item.setPrice(product.getPrice());
+        if (product.getCategory() != null) item.setCategory(product.getCategory());
+
+        try {
+            productRepo.update(item);
+            return productRepo.findById(id);
+        } catch (Exception e) {
+            LOG.error("Error updating item: " + id + " | " + e.getMessage());
+            return null;
         }
-        return null;
+
     }
 
     public Long countAll() {
@@ -106,6 +123,26 @@ public class ProductService {
         }
     }
 
+    public Product createDTOtoProduct(ProductCreateDTO product) {
+        Product item = new Product();
+        StockMovement stockMovement = new StockMovement();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        Date date = new Date();
+        item.setId(new ObjectId());
+        stockMovement.setId(new ObjectId());
+
+        stockMovement.setDate(formatter.format(date));
+        stockMovement.setType(StockMovement.MovementType.IN);
+        stockMovement.setQuantity(product.getStockMovements().getQuantity());
+        stockMovement.setProductId(item.getId());
+
+        item.setName(product.getName());
+        item.setPrice(product.getPrice());
+        item.setCategory(product.getCategory());
+        item.setTotalQuantity(product.getStockMovements().getQuantity());
+        item.setStockMovements(List.of(stockMovement));
+        return item;
+    }
     //TODO: Refactor this method to use the ItemReq record
     public void sendItemForValidation(ObjectId itemid) {
         LOG.info("Sending item for validation: " + itemid);

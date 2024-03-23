@@ -11,6 +11,8 @@ import org.eclipse.microprofile.graphql.Query;
 import org.jboss.logging.Logger;
 
 import ch.hftm.model.product.Product;
+import ch.hftm.model.product.ProductCreateDTO;
+import ch.hftm.model.product.ProductUpdatedDTO;
 import ch.hftm.services.ProductService;
 
 import java.util.List;
@@ -25,12 +27,11 @@ public class ProductResource {
 
     @Mutation
     @Description("Create a new product")
-    public Product createProduct(@Valid Product item) {
-        item.setId(new ObjectId());
-        LOG.info("Creating new item: " + item.getId());
+    public Product createProduct(@Valid ProductCreateDTO item) {
+        LOG.info("Creating new item: " + item.getName());
         Product product = itemService.createProduct(item);
         if (product != null) {
-            LOG.info("Sending item for validation: " + item.getId());
+            LOG.info("Sending item for validation: " + product.getId());
             return product;
         }
         return null;
@@ -38,7 +39,7 @@ public class ProductResource {
 
     @Mutation
     @Description("Update a product")
-    public Product updateProduct(String id, Product item) {
+    public Product updateProduct(String id, ProductUpdatedDTO item) {
         LOG.info("Updating item: " + id);
         if (itemService.find(new ObjectId(id)) == null) {
             return null;
