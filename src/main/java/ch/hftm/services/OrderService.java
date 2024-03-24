@@ -11,6 +11,7 @@ import org.jboss.logging.Logger;
 import ch.hftm.model.order.Order;
 import ch.hftm.model.order.OrderCreateDTO;
 import ch.hftm.model.product.Product;
+import ch.hftm.model.product.util.StockMovement;
 import ch.hftm.model.productOrder.ProductOrder;
 import ch.hftm.model.productOrder.ProductOrderCreateDTO;
 import ch.hftm.repository.OrderRepository;
@@ -59,6 +60,9 @@ public class OrderService {
             ProductOrder newProductOrder = createDTOtoProductOrder(productOrder, newOrder);
             Product product = productRepository.findById(newProductOrder.getProductId());
             product.setTotalQuantity(product.getTotalQuantity() - productOrder.getQuantity());
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+            Date date = new Date(); 
+            product.getStockMovements().add(new StockMovement(new ObjectId(), StockMovement.MovementType.OUT, productOrder.getQuantity(), formatter.format(date), product.getNewestLocationId()));
             productRepository.update(product);
         }
         

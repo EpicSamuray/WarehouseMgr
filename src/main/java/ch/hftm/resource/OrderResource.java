@@ -51,7 +51,7 @@ public class OrderResource {
 
     @Mutation
     @Description("Delete all Order")
-    public boolean deleteAllOrder() {
+    public boolean deleteAllOrders() {
         LOG.info("Deleting all Order");
         return orderService.deleteAllOrders();
     }
@@ -65,21 +65,21 @@ public class OrderResource {
 
     @Query
     @Description("Get all Products Order")
-    public List<ProductOrder> getAllProductsOrderFromOrder() {
+    public List<ProductOrder> allProductsOrderFromOrder() {
         LOG.info("Getting all Products Order");
         return orderService.getAllProductsOrder();
     }
 
     @Query
     @Description("Get all Orders")
-    public List<Order> getAllOrders() {
+    public List<Order> allOrders() {
         LOG.info("Getting all Orders");
         return orderService.getAllOrders();
     }
 
     @Query
     @Description("Get Order by ID")
-    public Order getOrderById(String id) {
+    public Order orderById(String id) {
         LOG.info("Getting Order by ID: " + id);
         return orderService.findById(new ObjectId(id));
     }

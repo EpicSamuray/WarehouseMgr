@@ -39,6 +39,9 @@ public class Product extends PanacheMongoEntity {
     @BsonProperty("quantity")
     private int totalQuantity;
 
+    @BsonProperty("newestLocation")
+    private ObjectId newestLocationId;
+
     @BsonProperty("StockMovement")
     private List<StockMovement> stockMovements;
 }

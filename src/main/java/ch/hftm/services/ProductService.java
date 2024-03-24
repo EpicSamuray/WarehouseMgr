@@ -7,11 +7,12 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.jboss.logging.Logger;
 
+import ch.hftm.model.location.Location;
 import ch.hftm.model.product.Product;
 import ch.hftm.model.product.ProductCreateDTO;
 import ch.hftm.model.product.ProductUpdatedDTO;
 import ch.hftm.model.product.util.StockMovement;
-import ch.hftm.model.product.util.StockMovementCreateDTO;
+import ch.hftm.repository.LocationRepository;
 import ch.hftm.repository.ProductRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -26,6 +27,9 @@ public class ProductService {
     @Inject
     ProductRepository productRepo;
 
+    @Inject
+    LocationRepository locationRepo;
+
     private static final Logger LOG = Logger.getLogger(ProductService.class);
 
     public Product createProduct(ProductCreateDTO product) {
@@ -35,6 +39,13 @@ public class ProductService {
         }
 
         Product item = createDTOtoProduct(product);
+
+        LOG.info("Location exists: " + product.getNewestLocationId());
+        if (!locationRepo.isPersisted(new ObjectId(product.getNewestLocationId()))) {
+            throw new IllegalArgumentException("Location does not exist");
+        }
+
+        item.setNewestLocationId(new ObjectId(product.getNewestLocationId()));
         
         if (productRepo.isPersisted(item.getId())) {
             throw new IllegalArgumentException("Item already exists");
@@ -45,6 +56,37 @@ public class ProductService {
             return productRepo.findById(item.getId());
         } 
         return null;
+    }
+
+    public Product transferProduct(ObjectId id, ObjectId locationId) {
+        LOG.info("Transferring item: " + id + " to location: " + locationId);
+        if (id == null) {
+            LOG.error("Error transferring item because id is required");
+            throw new IllegalArgumentException("id is required");
+        }
+
+        if (!productRepo.isPersisted(id)) {
+            LOG.error("Error transferring item because item does not exist");
+            throw new IllegalArgumentException("Item does not exist");
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        Date date = new Date(); 
+
+        Product item = productRepo.findById(id);
+        Location oldLocation = locationRepo.findById(item.getNewestLocationId());
+        Location newLocation = locationRepo.findById(locationId);
+        int quantity = item.getTotalQuantity();
+        oldLocation.setCapacity(oldLocation.getCurrentCapacity() - quantity);
+        newLocation.setCapacity(newLocation.getCurrentCapacity() + quantity);
+
+
+        item.setNewestLocationId(locationId);
+        item.getStockMovements().add(new StockMovement(new ObjectId(), StockMovement.MovementType.TRANSFER, quantity, formatter.format(date), locationId));
+        productRepo.update(item);
+        locationRepo.update(oldLocation);
+        locationRepo.update(newLocation);
+        return productRepo.findById(id);
     }
 
     public List<Product> getAllProducts() {
@@ -134,6 +176,7 @@ public class ProductService {
         stockMovement.setDate(formatter.format(date));
         stockMovement.setType(StockMovement.MovementType.IN);
         stockMovement.setQuantity(product.getStockMovements().getQuantity());
+        stockMovement.setLocationId(new ObjectId(product.getNewestLocationId()));
 
         item.setName(product.getName());
         item.setPrice(product.getPrice());

@@ -34,7 +34,7 @@ public class StockMovement extends PanacheMongoEntity {
     private ObjectId locationId;
 
     public enum MovementType {
-        IN, OUT
+        IN, OUT, TRANSFER
     }
 
 }

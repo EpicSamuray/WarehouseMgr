@@ -1,4 +1,4 @@
-package ch.hftm.model;
+package ch.hftm.model.location;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;

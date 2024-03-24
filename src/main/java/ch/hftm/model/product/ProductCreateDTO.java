@@ -2,6 +2,7 @@ package ch.hftm.model.product;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.graphql.NonNull;
 import org.eclipse.microprofile.graphql.Type;
 
@@ -23,4 +24,5 @@ public class ProductCreateDTO {
     @NonNull private double price;
     @NonNull private String category;
     @NonNull private StockMovementCreateDTO stockMovements;
+    @NonNull private String newestLocationId;
 }

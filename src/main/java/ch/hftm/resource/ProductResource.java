@@ -27,7 +27,7 @@ public class ProductResource {
 
     @Mutation
     @Description("Create a new product")
-    public Product createProduct(@Valid ProductCreateDTO item) {
+    public Product createProduct(ProductCreateDTO item) {
         LOG.info("Creating new item: " + item.getName());
         Product product = itemService.createProduct(item);
         if (product != null) {
@@ -53,28 +53,43 @@ public class ProductResource {
     }
 
     @Mutation
-    @Description("Delete a product")
-    public Product deleteItem(String id) {
+    @Description("Transfer a product")
+    public Product transferProduct(String id, String locationId, int quantity) {
+        LOG.info("Transferring item: " + id + " to location: " + locationId);
+        if (id == null) {
+            LOG.error("Error transferring item because id is required");
+            throw new IllegalArgumentException("id is required");
+        }
+        if (locationId == null) {
+            LOG.error("Error transferring item because locationId is required");
+            throw new IllegalArgumentException("locationId is required");
+        }
+        return itemService.transferProduct(new ObjectId(id), new ObjectId(locationId));
+    }
+
+    @Mutation
+    @Description("Delete a product with Boolean as Return Type")
+    public Boolean deleteProduct(String id) {
         ObjectId objectId = new ObjectId(id);
         Product item = itemService.find(objectId);
         boolean deleted = itemService.delete(item);
         if (deleted) {
-            return item;
+            return true;
         } else {
-            return null;
+            return false;
         }
     }
 
     @Query
     @Description("Get all products")
-    public List<Product> getAllProducts() {
+    public List<Product> allProducts() {
         LOG.info("getAllProducts");
         return itemService.getAllProducts();
     }
 
     @Query
     @Description("Get a product by id")
-    public Product getItem(String id) {
+    public Product productById(String id) {
         ObjectId objectId = new ObjectId(id);
         Product product = itemService.find(objectId);
         if (product != null) {
