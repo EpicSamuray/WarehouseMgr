@@ -119,3 +119,5 @@ subscription{
 Besuche nach dem Starten des Compose die Seite: **http://localhost:8080/q/graphql-ui**
 Hier Kommst du zu denn Schemas da hast du alle möglichet typen und Methoden die du verwenden Kannst: **http://localhost:8080/graphql/schema.graphql**
 
+[Zu denn Beispielen](./.github/example.md)
+
