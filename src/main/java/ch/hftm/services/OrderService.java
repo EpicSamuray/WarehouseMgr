@@ -36,6 +36,9 @@ public class OrderService {
     @Inject
     private ProductOrderRepository productOrderRepository;
 
+    @Inject
+    private ProductService productService;
+
     private static final Logger LOG = Logger.getLogger(OrderService.class);
 
 
@@ -62,7 +65,10 @@ public class OrderService {
             product.setTotalQuantity(product.getTotalQuantity() - productOrder.getQuantity());
             SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
             Date date = new Date(); 
-            product.getStockMovements().add(new StockMovement(new ObjectId(), StockMovement.MovementType.OUT, productOrder.getQuantity(), formatter.format(date), product.getNewestLocationId()));
+            StockMovement stockMovement = new StockMovement(new ObjectId(), StockMovement.MovementType.OUT, productOrder.getQuantity(), formatter.format(date), product.getNewestLocationId());
+            product.getStockMovements().add(stockMovement);
+            productService.publishStockMovement(product);
+            productService.publishStockMovement(stockMovement);
             productRepository.update(product);
         }
         

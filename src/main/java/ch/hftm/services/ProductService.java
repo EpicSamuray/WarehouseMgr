@@ -3,6 +3,7 @@ package ch.hftm.services;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.SubmissionPublisher;
 
 import org.bson.types.ObjectId;
 import org.jboss.logging.Logger;
@@ -14,6 +15,7 @@ import ch.hftm.model.product.ProductUpdatedDTO;
 import ch.hftm.model.product.util.StockMovement;
 import ch.hftm.repository.LocationRepository;
 import ch.hftm.repository.ProductRepository;
+import io.smallrye.mutiny.Multi;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -29,6 +31,9 @@ public class ProductService {
 
     @Inject
     LocationRepository locationRepo;
+
+    private final SubmissionPublisher<StockMovement> stockMovementsPublisher = new SubmissionPublisher<>();
+    private final SubmissionPublisher<Product> ProductStockMovementsPublisher = new SubmissionPublisher<>();
 
     private static final Logger LOG = Logger.getLogger(ProductService.class);
 
@@ -80,22 +85,30 @@ public class ProductService {
         Date date = new Date(); 
 
         Product item = productRepo.findById(id);
-        Location oldLocation = locationRepo.findById(item.getNewestLocationId());
-        LOG.info("Old Location: " + oldLocation.getIdentifier());
+
         Location newLocation = locationRepo.findById(locationId);
         LOG.info("New Location: " + newLocation.getIdentifier());
         int quantity = item.getTotalQuantity();
         LOG.info("Quantity: " + quantity);
-        oldLocation.setCurrentCapacity(oldLocation.getCurrentCapacity() - quantity);
         newLocation.setCurrentCapacity(newLocation.getCurrentCapacity() + quantity);
-        LOG.info("Old Location Capacity: " + oldLocation.getCurrentCapacity());
+        Location oldLocation = locationRepo.findById(item.getNewestLocationId());
+        if (oldLocation != null) {
+            LOG.info("Old Location: " + oldLocation.getIdentifier());        
+            oldLocation.setCurrentCapacity(oldLocation.getCurrentCapacity() - quantity);
+            LOG.info("Old Location Capacity: " + oldLocation.getCurrentCapacity());
+            locationRepo.update(oldLocation);
+        }
+
         LOG.info("New Location Capacity: " + newLocation.getCurrentCapacity());
 
+        StockMovement stockMovement = new StockMovement(new ObjectId(), StockMovement.MovementType.TRANSFER, quantity, formatter.format(date), locationId);
 
         item.setNewestLocationId(locationId);
-        item.getStockMovements().add(new StockMovement(new ObjectId(), StockMovement.MovementType.TRANSFER, quantity, formatter.format(date), locationId));
+        item.getStockMovements().add(stockMovement);
+        publishStockMovement(stockMovement);
+        publishStockMovement(item);
         productRepo.update(item);
-        locationRepo.update(oldLocation);
+        
         locationRepo.update(newLocation);
         return productRepo.findById(id);
     }
@@ -192,12 +205,14 @@ public class ProductService {
         stockMovement.setType(StockMovement.MovementType.IN);
         stockMovement.setQuantity(product.getStockMovements().getQuantity());
         stockMovement.setLocationId(new ObjectId(product.getNewestLocationId()));
+        publishStockMovement(stockMovement);
 
         item.setName(product.getName());
         item.setPrice(product.getPrice());
         item.setCategory(product.getCategory());
         item.setTotalQuantity(product.getStockMovements().getQuantity());
         item.setStockMovements(List.of(stockMovement));
+        publishStockMovement(item);
         return item;
     }
     //TODO: Refactor this method to use the ItemReq record
@@ -226,5 +241,22 @@ public class ProductService {
         LOG.info("Payload Item: ");
     }
 
-    
+	public Multi<StockMovement> getStockMovementsPublisher() {
+        LOG.info("Getting stock movements publisher");
+        return Multi.createFrom().publisher(stockMovementsPublisher);
+	}
+
+    public void publishStockMovement(StockMovement stockMovement) {
+        LOG.info("Publishing stock movement: " + stockMovement);
+        stockMovementsPublisher.submit(stockMovement);
+    } 
+
+    public Multi<Product> getProductStockMovementPublisher() {
+        return Multi.createFrom().publisher(ProductStockMovementsPublisher);
+    }
+
+    public void publishStockMovement(Product product ) {
+        LOG.info("Publishing stock movement: " + product);
+        ProductStockMovementsPublisher.submit(product);
+    } 
 }

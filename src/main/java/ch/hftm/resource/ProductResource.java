@@ -8,11 +8,15 @@ import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
 import org.jboss.logging.Logger;
+import org.reactivestreams.Publisher;
 
 import ch.hftm.model.product.Product;
 import ch.hftm.model.product.ProductCreateDTO;
 import ch.hftm.model.product.ProductUpdatedDTO;
+import ch.hftm.model.product.util.StockMovement;
 import ch.hftm.services.ProductService;
+import io.smallrye.graphql.api.Subscription;
+import io.smallrye.mutiny.Multi;
 
 import java.util.List;
 
@@ -103,6 +107,18 @@ public class ProductResource {
     public boolean deleteAll() {
         return itemService.delete(true);
         
+    }
+
+    @Subscription
+    @Description("Get notified when a change occurs in the stock movements of a product")
+    public Multi<StockMovement> onStockMovement() {
+        return itemService.getStockMovementsPublisher();
+    }
+
+    @Subscription
+    @Description("Get notified when a change in Product")
+    public Multi<Product> onStockMovementForProduct(String productId) {
+        return itemService.getProductStockMovementPublisher().filter(id -> id.getId().equals(new ObjectId(productId)));
     }
 
 }

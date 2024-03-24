@@ -2,57 +2,29 @@ version: '3.7'
 name: 'warehouse-management'
 services: 
   warehouse-service:
-    image: 
+    image: ghcr.io/epicsamuray/warehousemgr:0.1.0
     container_name: warehouse-service
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://root:example@mongo:27017/
     ports:
       - "8080:8080"
     depends_on:
-      redpanda:
-        condition: service_healthy
-    
-  redpanda:
-    image: docker.redpanda.com/redpandadata/redpanda:v23.3.5
-    container_name: redpanda
-    command: 
-      - redpanda start
-      - --smp 1
-      - --overprovisioned
-      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
-      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
-      - --pandaproxy-addr  internal://redpanda:9092, external://0.0.0.0:18082
-      - --advertise-pandaproxy-addr internal://redpanda:8082, external://localhost:18082
-      - --schema-registry-addr internal://redpanda:8081, external://localhost:18081
-    ports:
-      - "18081:18081"
-      - "18082:18082"
-      - "19092:19092"
-    healthcheck:
-      test: ["CMD", "rpk", "cluster", "health"]
-      interval: 10s
-      timeout: 30s
-      retries: 5
-  
-  redpanda-console:
-    image: docker.redpanda.com/redpandadata/console:v2.4.3
-    container_name: redpanda-console
-    entrypoint: /bin/sh
-    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+      - mongo
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
     environment:
-      - CONFIG_FILEPATH: /tmp/config.yml
-      - CONSOLE_CONFIG_FILE: | 
-         kafka:
-          brokers: ["redpanda:9092"]
-          schemaRegistry: 
-            enabled: true
-            urls: ["http://redpanda:8081"]
-        redpanda:
-          adminApi:
-            enabled: true
-            urls: ["http://redpanda:9644"]
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  mongo-express:
+    image: mongo-express
+    restart: always
     ports:
-      - "8081:8080"
-    depends_on:
-      redpanda:
-        condition: service_healthy
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/

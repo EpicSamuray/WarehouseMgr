@@ -2,16 +2,12 @@ package ch.hftm.services;
 
 import java.util.List;
 
-import org.apache.kafka.common.protocol.types.Field.Str;
 import org.bson.types.ObjectId;
 
 import ch.hftm.model.location.Location;
 import ch.hftm.model.location.LocationCreateDTO;
 import ch.hftm.model.location.LocationUpdateDTO;
-import ch.hftm.model.product.Product;
-import ch.hftm.model.product.util.StockMovement;
 import ch.hftm.repository.LocationRepository;
-import ch.hftm.repository.ProductRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
