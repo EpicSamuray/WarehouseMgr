@@ -30,8 +30,8 @@ public class StockMovement extends PanacheMongoEntity {
     @BsonProperty("date")
     private String date;
 
-    @BsonProperty("productId")
-    private ObjectId productId;
+    @BsonProperty("locationId")
+    private ObjectId locationId;
 
     public enum MovementType {
         IN, OUT

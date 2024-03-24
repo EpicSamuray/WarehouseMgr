@@ -134,7 +134,6 @@ public class ProductService {
         stockMovement.setDate(formatter.format(date));
         stockMovement.setType(StockMovement.MovementType.IN);
         stockMovement.setQuantity(product.getStockMovements().getQuantity());
-        stockMovement.setProductId(item.getId());
 
         item.setName(product.getName());
         item.setPrice(product.getPrice());
