@@ -10,6 +10,7 @@ import org.jboss.logging.Logger;
 
 import ch.hftm.model.location.Location;
 import ch.hftm.model.location.LocationCreateDTO;
+import ch.hftm.model.location.LocationUpdateDTO;
 import ch.hftm.services.LocationService;
 import io.vertx.core.cli.annotations.Description;
 import jakarta.inject.Inject;
@@ -36,7 +37,7 @@ public class LocationResource {
 
     @Mutation
     @Description("Update a location")
-    public Location updateLocation(String id, Location location) {
+    public Location updateLocation(String id, LocationUpdateDTO location) {
         LOG.info("Updating location: " + id);
         try {
             return locationService.updateLocation(id, location);

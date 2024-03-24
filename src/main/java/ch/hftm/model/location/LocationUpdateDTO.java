@@ -1,20 +1,17 @@
 package ch.hftm.model.location;
 
-import org.bson.types.ObjectId;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
-@NoArgsConstructor 
+@NoArgsConstructor
 @AllArgsConstructor
-public class LocationCurrentDTO {
-    
-    private ObjectId id;
+public class LocationUpdateDTO {
+
     private String name;
+    private String description;
     private String identifier;
 }

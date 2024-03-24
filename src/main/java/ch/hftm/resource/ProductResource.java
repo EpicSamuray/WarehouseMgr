@@ -54,7 +54,7 @@ public class ProductResource {
 
     @Mutation
     @Description("Transfer a product")
-    public Product transferProduct(String id, String locationId, int quantity) {
+    public Product transferProduct(String id, String locationId) {
         LOG.info("Transferring item: " + id + " to location: " + locationId);
         if (id == null) {
             LOG.error("Error transferring item because id is required");

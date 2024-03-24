@@ -1,6 +1,7 @@
 package ch.hftm.model.product;
 
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ public class ProductUpdatedDTO {
     
     private String name;
     private String description;
-    private double price;
+    private Double price;
     private String category;    
     
 }

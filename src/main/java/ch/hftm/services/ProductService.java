@@ -46,6 +46,12 @@ public class ProductService {
         }
 
         item.setNewestLocationId(new ObjectId(product.getNewestLocationId()));
+        Location location = locationRepo.findById(item.getNewestLocationId());
+        int quantity = item.getTotalQuantity() + location.getCurrentCapacity();
+        LOG.info("Location capacity: " + location.getCapacity());
+        location.setCurrentCapacity(quantity);
+        LOG.info("Location " + location);
+        locationRepo.update(location);
         
         if (productRepo.isPersisted(item.getId())) {
             throw new IllegalArgumentException("Item already exists");
@@ -75,10 +81,15 @@ public class ProductService {
 
         Product item = productRepo.findById(id);
         Location oldLocation = locationRepo.findById(item.getNewestLocationId());
+        LOG.info("Old Location: " + oldLocation.getIdentifier());
         Location newLocation = locationRepo.findById(locationId);
+        LOG.info("New Location: " + newLocation.getIdentifier());
         int quantity = item.getTotalQuantity();
-        oldLocation.setCapacity(oldLocation.getCurrentCapacity() - quantity);
-        newLocation.setCapacity(newLocation.getCurrentCapacity() + quantity);
+        LOG.info("Quantity: " + quantity);
+        oldLocation.setCurrentCapacity(oldLocation.getCurrentCapacity() - quantity);
+        newLocation.setCurrentCapacity(newLocation.getCurrentCapacity() + quantity);
+        LOG.info("Old Location Capacity: " + oldLocation.getCurrentCapacity());
+        LOG.info("New Location Capacity: " + newLocation.getCurrentCapacity());
 
 
         item.setNewestLocationId(locationId);
@@ -88,6 +99,7 @@ public class ProductService {
         locationRepo.update(newLocation);
         return productRepo.findById(id);
     }
+
 
     public List<Product> getAllProducts() {
         LOG.info(LOG.getName());
@@ -117,7 +129,7 @@ public class ProductService {
         Product item = productRepo.findById(id);
         if (product.getName() != null) item.setName(product.getName());
         if (product.getDescription() != null) item.setDescription(product.getDescription());
-        if (product.getPrice() != 0) item.setPrice(product.getPrice());
+        if (product.getPrice() != null) item.setPrice(product.getPrice());
         if (product.getCategory() != null) item.setCategory(product.getCategory());
 
         try {
@@ -152,6 +164,9 @@ public class ProductService {
             LOG.error("Error deleting item because item is required");
             throw new IllegalArgumentException("item is required");
         }
+        Location location = locationRepo.findById(item.getNewestLocationId());
+        location.setCurrentCapacity(location.getCurrentCapacity() - item.getTotalQuantity());
+        locationRepo.update(location);
         return productRepo.deleteById(item.getId());
     }
 

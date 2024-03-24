@@ -37,19 +37,6 @@ public class OrderResource {
     }
 
     @Mutation
-    @Description("Update a order")
-    public Order updateOrder(String id, Order order){
-        LOG.info("Updating order: " + id);
-        try {
-            Order dbOrder = orderService.findById(new ObjectId(id));
-            return orderService.updateOrder(dbOrder);
-        } catch (Exception e) {
-            LOG.error("Error updating order: " + id + " | " + e.getMessage());
-            return null;
-        }
-    }
-
-    @Mutation
     @Description("Delete all Order")
     public boolean deleteAllOrders() {
         LOG.info("Deleting all Order");

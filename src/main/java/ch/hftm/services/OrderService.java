@@ -83,26 +83,6 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    public Order updateOrder(Order order) {
-        
-        if (order.getId() == null) {
-            throw new IllegalArgumentException("id is required");
-        }
-
-        for (ProductOrder productOrder : order.getProducts()) {
-            productOrderRepository.update(productOrder);
-        }
-
-        for (ProductOrder productOrder : order.getProducts()) {
-            Product product = productRepository.findById(productOrder.getId());
-            product.setTotalQuantity(product.getTotalQuantity() - productOrder.getQuantity());
-            productRepository.update(product);
-        }
-
-        orderRepository.update(order);
-        return orderRepository.findById(order.getId());
-    }
-
     public Order deleteOrder(ObjectId id) {
         Order order = orderRepository.findById(id);
         if (order != null) {

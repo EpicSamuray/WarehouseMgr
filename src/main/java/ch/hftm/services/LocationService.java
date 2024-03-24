@@ -7,7 +7,11 @@ import org.bson.types.ObjectId;
 
 import ch.hftm.model.location.Location;
 import ch.hftm.model.location.LocationCreateDTO;
+import ch.hftm.model.location.LocationUpdateDTO;
+import ch.hftm.model.product.Product;
+import ch.hftm.model.product.util.StockMovement;
 import ch.hftm.repository.LocationRepository;
+import ch.hftm.repository.ProductRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -30,18 +34,17 @@ public class LocationService {
         return locationRepository.findByIdentifier(identifier);
     }
 
-    public Location updateLocation(String id, Location location) {
+    public Location updateLocation(String id, LocationUpdateDTO location) {
         if (!locationRepository.isPersisted(new ObjectId(id))) {
             throw new IllegalArgumentException("Location does not exist");
         }
         Location locationToUpdate = locationRepository.findById(new ObjectId(id));
-        locationToUpdate.setName(location.getName());
-        locationToUpdate.setDescription(location.getDescription());
-        locationToUpdate.setCapacity(location.getCapacity());
-        locationToUpdate.setIdentifier(location.getIdentifier());
-        locationToUpdate.setCurrentCapacity(location.getCurrentCapacity());
-        locationRepository.update(location);
-        return locationRepository.findById(location.getId());
+        if (location.getName() != null) locationToUpdate.setName(location.getName());
+        if (location.getDescription() != null) locationToUpdate.setDescription(location.getDescription()); 
+        if (location.getIdentifier() != null) locationToUpdate.setIdentifier(location.getIdentifier());
+
+        locationRepository.update(locationToUpdate);
+        return locationRepository.findById(locationToUpdate.getId());
     }
 
     public boolean deleteLocation(ObjectId id) {
