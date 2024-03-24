@@ -1,68 +1,121 @@
-# warehouse-management
+# Warehouse Management
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## Meine Definierten Anforderungen
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+**Ziel:**
+Entwicklung einer Backend-Anwendung für die Lagerverwaltung
+ 
+**Technische Anforderungen:**
+ 
 
-## Running the application in dev mode
+* **API-Sprache:** GraphQL
+* **Datenbank:** MongoDB
+* **Messaging-System:** Kafka (Optional)
+* **Backend-Framework:** Quarkus
+* **Benutzerverwaltung:** Keycloak (Optional)
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
+**Benutzerverwaltung:** Einfache Authentifizierung und Autorisierung (z. B. mit JWT) (Optional)
+ 
+
+Das Vorhaben wird bei einem bestehenden Projekt angewendet. Das Backend, das verwendet wird, stammt aus dem Datenbank-Scripting-Kurs.
+
+ 
+
+**Funktionalitäten**
+* **GraphQL-API:**
+    * Abrufen von Lagerbeständen
+    * Verwalten von Produkten (Hinzufügen, Bearbeiten, Entfernen)
+    * Bearbeiten von Bestellungen (Eingang, Warenausgang)
+* **MongoDB:**
+    * Speicherung von Produktinformationen
+    * Speicherung von Bestelldaten
+    * Speicherung von Lagerbewegungen
+ 
+
+**Zusatzfunktionen:** (Optional)
+ 
+
+**Benutzerverwaltung:** Einfache Authentifizierung und Autorisierung von Benutzern (z. B. mit JWT)
+ 
+
+### Verwendetes Thema
+### GraphQL in der Lagerverwaltung
+* **Lagerbestände abzurufen:**
+    * Abfragen des Lagerbestands für ein bestimmtes Produkt
+    * Abfragen des Lagerbestands für alle Produkte
+    * Abfragen des Lagerbestands an einem bestimmten Standort
+* **Produkte zu verwalten:**
+    * Hinzufügen neuer Produkte
+    * Bearbeiten von vorhandenen Produkten
+    * Entfernen von Produkten
+* **Bestellungen zu bearbeiten:**
+    * Erfassen von Bestellungen
+    * Bearbeiten von Bestellungen
+    * Verfolgen von Bestellungen (Optional)
+
+## Überblick
+
+Das Warehouse Management System ist ein modernes Lagerverwaltungstool, entwickelt mit Quarkus, um Effizienz und Schnelligkeit in Lageroperationen zu bringen. Es bietet eine umfassende GraphQL-API für eine flexible und interaktive Datenmanipulation, wodurch Anwender komplexe Abfragen und Mutationen mit Leichtigkeit durchführen können. Die Anwendung unterstützt Docker Compose, was die Bereitstellung und Skalierung vereinfacht, indem es die Anwendung und ihre Abhängigkeiten in Container verpackt. Durch die Nutzung moderner Technologien und Praktiken bietet das System eine robuste Lösung für die Verwaltung und Optimierung von Lagerbeständen und -operationen.
+
+## Vorausetzung
+* Docker 
+
+## Docker Compose
+Um die Bereitstellung und das Management des Warehouse Management Systems und seiner Abhängigkeiten zu vereinfachen, bieten wir eine Docker Compose Konfiguration an. Mit Docker Compose können Sie die Anwendung und die zugehörige MongoDB-Datenbank mit einem einzigen Befehl starten.
+
+Stellen Sie sicher, dass Docker und Docker Compose auf Ihrem System installiert sind, und führen Sie dann den folgenden Befehl aus, um die Anwendung und die Datenbank zu starten:
+
+```bash
+docker compose up -d
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+## MongoDB dashboard
+* Webseite: http://localhost:8081/
+* Login 
+    * **Username:** admin
+    * **Password:** pass
+## GraphQL-API
+Das System bietet eine umfangreiche GraphQL-API, die es ermöglicht, Standorte, Produkte, Bestellungen und Benutzer effizient zu verwalten. Über GraphQL-Endpunkte können Sie komplexe Abfragen erstellen, um spezifische Daten zu erhalten, und Mutationen durchführen, um Ihre Daten zu aktualisieren.
 
-## Packaging and running the application
+Die GraphQL-API ist unter **http://localhost:8080/graphql** zugänglich. Sie können auch das GraphQL-UI unter **http://localhost:8080/q/graphql-ui/** besuchen, um Ihre Abfragen und Mutationen interaktiv zu testen.
 
-The application can be packaged using:
-```shell script
-./mvnw package
+### Beispiel-GraphQL-Abfrage:
+```graphql
+query{
+  allProducts {
+    name
+    price
+    category
+  }
+}
 ```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
+### Beispiel-GraphQL-Mutation:
+```graphql
+mutation {
+  createProduct(product: {
+    name: "Neues Produkt",
+    price: 19.99,
+    category: "Hardware"
+  }) {
+    id
+    name
+  }
+}
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using: 
-```shell script
-./mvnw package -Dnative
+### Beispiel-GraphQL-Subscription
+```graphql
+subscription{
+  onStockMovement{
+    id
+    locationId
+    quantity
+  }
+}
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+## Testen der API mit GraphQL-UI
 
-You can then execute your native executable with: `./target/warehouse-management-0.1.0-runner`
+Besuche nach dem Starten des Compose die Seite: **http://localhost:8080/q/graphql-ui**
+Hier Kommst du zu denn Schemas da hast du alle möglichet typen und Methoden die du verwenden Kannst: **http://localhost:8080/graphql/schema.graphql**
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
-
-## Related Guides
-
-- SmallRye Reactive Messaging - Kafka Connector ([guide](https://quarkus.io/guides/kafka-reactive-getting-started)): Connect to Kafka with Reactive Messaging
-- SmallRye GraphQL ([guide](https://quarkus.io/guides/smallrye-graphql)): Create GraphQL Endpoints using the code-first approach from MicroProfile GraphQL
-
-## Provided Code
-
-### Reactive Messaging codestart
-
-Use SmallRye Reactive Messaging
-
-[Related Apache Kafka guide section...](https://quarkus.io/guides/kafka-reactive-getting-started)
-
-
-### SmallRye GraphQL
-
-Start coding with this Hello GraphQL Query
-
-[Related guide section...](https://quarkus.io/guides/smallrye-graphql)

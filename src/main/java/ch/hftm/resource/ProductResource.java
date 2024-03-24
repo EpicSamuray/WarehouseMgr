@@ -8,7 +8,6 @@ import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
 import org.jboss.logging.Logger;
-import org.reactivestreams.Publisher;
 
 import ch.hftm.model.product.Product;
 import ch.hftm.model.product.ProductCreateDTO;
