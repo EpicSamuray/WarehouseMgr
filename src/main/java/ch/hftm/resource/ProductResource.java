@@ -1,7 +1,6 @@
 package ch.hftm.resource;
 
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.graphql.Description;
